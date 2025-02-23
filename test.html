@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="loginForm" onsubmit="return validateData()">
+        <!-- Form inputs -->
+        <input type="password" name="password" id="passwordInput">
+        <span id="error-password"></span>
+        <input type="email" name="email" id="emailInput">
+        <span id="error-email"></span> 
+        <button type="submit" class="btn btn-primary">Sign In</button>
+        <span id="error-message"></span> 
+      </form>
+
+      <script src="assets/js/jquery-1.11.0.js"></script>
+    
+      <!-- <script src="assets/js/bootstrap.min.js"></script> -->
+      
+      <script>
+      function validateData() {
+      // Get the form inputs
+      var password = $('#passwordInput').val();
+      var email =$('#emailInput').val();
+      // Create an object with the form data
+      var data = {
+          password: password,
+          email: email
+      };
+  
+      // Send the AJAX request
+      document.querySelectorAll('[id^="error-"]').forEach(e=>{e.innerText='';})
+      $.ajax({
+          url: 'validate.php', // Replace with the actual URL where you handle the validation on the server-side
+          type: 'POST',
+          dataType: 'json',
+          data: data,
+          success: function(response) {
+          // Handle the response from the server
+        //   if (response.status === 'error-password') {
+        //     document.querySelectorAll('#error-password')[0].style.color = 'red';
+        //       $('#error-password').text(response.message).show();
+        //   }
+        //   else if (response.status === 'error-email') {             
+        //     document.querySelectorAll('#error-email')[0].style.color = 'red';
+        //       $('#error-email').text(response.message).show();
+        //   }
+        
+
+          if (response.status === 'success') {
+              // Validation successful, redirect or perform any desired action
+              //window.location.href = response.redirectUrl;
+              document.querySelectorAll('#error-message')[0].style.color = 'green';
+              $('#error-message').text(response.message).show();
+          }
+          else if (response.status === 'error') {
+                if (response.errortype === 'email') {
+                    document.querySelectorAll('#error-email')[0].style.color = 'red';
+                $('#error-email').text(response.message).show();
+                }
+                if (response.errortype === 'password') {
+                    document.querySelectorAll('#error-password')[0].style.color = 'red';
+                $('#error-password').text(response.message).show();
+                }
+            } 
+          else {
+              // Validation failed, display error message or perform any desired action
+              document.querySelectorAll('#error-message')[0].style.color = 'red';
+              $('#error-message').text(response.message).show();
+          }
+          },
+          error: function(xhr, status, error) {
+          // Handle any error that occurs during the AJAX request
+          console.log(error);
+          return false;
+          }
+      });
+      return false;
+      }  
+      </script>
+</body>
+</html>
